@@ -23,8 +23,17 @@ describe "自販機" do
   context "Step1:" do
     it "想定外のお金を入れたらそのままお釣りが出る" do
       vm = VendingMachine.new
+
       expect(vm.input_money(Money.new(5))).to eq(5)
       expect(vm.show_inputted_money).to eq(0)
+    end
+  end
+
+  context "Step2:" do
+    it "格納されているジュースの情報（値段と名前と在庫）を取得できる" do
+      vm = VendingMachine.new(drink_case: DrinkCase.coke_5)
+
+      expect(vm.show_drinks).to eq("120円 コーラ 5本")
     end
   end
 end

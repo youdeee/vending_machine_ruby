@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 class VendingMachine
-  attr_reader :account
+  attr_reader :account, :drink_case
 
-  def initialize(account: Account.new)
+  def initialize(account: Account.new, drink_case: DrinkCase.new)
     @account = account
+    @drink_case = drink_case
   end
 
   def input_money(money)
@@ -18,5 +19,9 @@ class VendingMachine
 
   def refund
     account.refund
+  end
+
+  def show_drinks
+    drink_case.show_drinks
   end
 end
