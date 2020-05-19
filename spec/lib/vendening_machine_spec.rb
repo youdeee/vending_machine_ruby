@@ -8,7 +8,7 @@ describe "自販機" do
       vm.input_money(Money.new(50))
       vm.input_money(Money.new(10000))
 
-      expect(vm.show_inputted_money).to eq(60)
+      expect(vm.inputted_money).to eq(60)
     end
 
     it "返金したらお釣りが返り合計金額が0になる" do
@@ -16,7 +16,7 @@ describe "自販機" do
       vm.input_money(Money.new(10))
 
       expect(vm.refund).to eq(10)
-      expect(vm.show_inputted_money).to eq(0)
+      expect(vm.inputted_money).to eq(0)
     end
   end
 
@@ -25,7 +25,7 @@ describe "自販機" do
       vm = VendingMachine.new
 
       expect(vm.input_money(Money.new(5))).to eq(5)
-      expect(vm.show_inputted_money).to eq(0)
+      expect(vm.inputted_money).to eq(0)
     end
   end
 
@@ -34,6 +34,62 @@ describe "自販機" do
       vm = VendingMachine.new(drink_case: DrinkCase.coke_5)
 
       expect(vm.show_drinks).to eq("120円 コーラ 5本")
+    end
+  end
+
+  context "Step3:" do
+    context "投入金額、在庫の点で、コーラが購入できるかどうかを取得できる" do
+      it "取得できる" do
+        vm = VendingMachine.new(drink_case: DrinkCase.coke_5)
+        vm.input_money(Money.new(100))
+        vm.input_money(Money.new(50))
+
+        expect(vm.buyable?("コーラ")).to eq(true)
+      end
+
+      it "取得できない（在庫ない）" do
+        vm = VendingMachine.new
+        vm.input_money(Money.new(100))
+        vm.input_money(Money.new(50))
+
+        expect(vm.buyable?("コーラ")).to eq(false)
+      end
+
+      it "取得できない（お金足りない）" do
+        vm = VendingMachine.new(drink_case: DrinkCase.coke_5)
+        vm.input_money(Money.new(100))
+
+        expect(vm.buyable?("コーラ")).to eq(false)
+      end
+    end
+
+    it "ジュース値段以上の投入金額が投入されている条件下で購入操作を行うと、ジュースの在庫を減らし、売り上げ金額を増やす" do
+      vm = VendingMachine.new(drink_case: DrinkCase.coke_5)
+      vm.input_money(Money.new(100))
+      vm.input_money(Money.new(50))
+
+      expect { vm.buy("コーラ") }.to change { vm.drinks_count }.by(-1)
+      expect(vm.inputted_money).to eq(30)
+      expect(vm.sales).to eq(120)
+    end
+
+    it "投入金額が足りない場合もしくは在庫がない場合、購入操作を行っても何もしない" do
+      vm = VendingMachine.new(drink_case: DrinkCase.coke_5)
+      vm.input_money(Money.new(100))
+      vm.input_money(Money.new(10))
+
+      expect { vm.buy("コーラ") }.to change { vm.drinks_count }.by(0)
+      expect(vm.inputted_money).to eq(110)
+      expect(vm.sales).to eq(0)
+    end
+
+    it "払い戻し操作では現在の投入金額からジュース購入金額を引いた釣り銭を出力する" do
+      vm = VendingMachine.new(drink_case: DrinkCase.coke_5)
+      vm.input_money(Money.new(100))
+      vm.input_money(Money.new(50))
+      vm.buy("コーラ")
+
+      expect(vm.refund).to eq(30)
     end
   end
 end

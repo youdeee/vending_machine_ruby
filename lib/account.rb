@@ -22,4 +22,9 @@ class Account
   def refund
     inputted_money.tap { @inputted_money = 0 }
   end
+
+  def buy(price)
+    @inputted_money -= price.to_i
+    @sales += price.to_i
+  end
 end
