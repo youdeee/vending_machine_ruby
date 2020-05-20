@@ -92,4 +92,22 @@ describe "自販機" do
       expect(vm.refund).to eq(30)
     end
   end
+
+  context "Step4:" do
+    it "ジュースを3種類管理できるようにする" do
+      vm = VendingMachine.new(drink_case: DrinkCase.coke_5)
+      vm.put_drink(Drink.new(name: "レッドブル", price: 200))
+      vm.put_drink(Drink.new(name: "水", price: 100))
+      vm.put_drink(Drink.new(name: "水", price: 100))
+      vm.put_drink(Drink.new(name: "水", price: 100))
+      vm.put_drink(Drink.new(name: "レッドブル", price: 200))
+      vm.put_drink(Drink.new(name: "水", price: 100))
+      vm.put_drink(Drink.new(name: "レッドブル", price: 200))
+      vm.put_drink(Drink.new(name: "水", price: 100))
+      vm.put_drink(Drink.new(name: "レッドブル", price: 200))
+      vm.put_drink(Drink.new(name: "レッドブル", price: 200))
+
+      expect(vm.show_drinks).to eq("120円 コーラ 5本\n200円 レッドブル 5本\n100円 水 5本")
+    end
+  end
 end

@@ -7,7 +7,7 @@ class VendingMachine
 
   attr_reader :account, :drink_case
 
-  def_delegators :@drink_case, :drinks_count, :show_drinks
+  def_delegators :@drink_case, :drinks_count, :show_drinks, :put_drink
   def_delegators :@account, :inputted_money, :sales, :refund
 
   def initialize(account: Account.new, drink_case: DrinkCase.new)

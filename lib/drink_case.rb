@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 class DrinkCase
   attr_reader :drinks
 
   class << self
     def coke_5
-      new(Array.new(5, Drink.new(name: "コーラ", price: 120)))
+      new(Array.new(5) { Drink.new(name: "コーラ", price: 120) })
     end
   end
 
   def initialize(drinks = [])
-    @drinks = drinks
+    @drinks = sort_drinks(drinks)
   end
 
   def show_drinks
@@ -31,7 +33,18 @@ class DrinkCase
     @drinks.delete_at(i).price
   end
 
+  def put_drink(drink)
+    return unless drink.is_a?(Drink)
+
+    @drinks << drink
+    @drinks = sort_drinks(drinks)
+  end
+
   private
+
+  def sort_drinks(drinks)
+    drinks.sort_by { |drink| [drink.name, drink.price] }
+  end
 
   def buyable_drink(drink_name, money)
     drinks.find { |drink| drink.name == drink_name && drink.price <= money }
