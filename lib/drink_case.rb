@@ -18,7 +18,11 @@ class DrinkCase
   end
 
   def buyable_drink(drink_name, money)
-    drinks.find { |drink| drink.name == drink_name && drink.price <= money }
+    if drink_name.is_a?(Array) # ランダム購入
+      drinks.shuffle.find { |drink| drink_name.include?(drink.name) && drink.price <= money }
+    else
+      drinks.find { |drink| drink.name == drink_name && drink.price <= money }
+    end
   end
 
   def drinks_count

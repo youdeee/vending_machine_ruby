@@ -146,4 +146,45 @@ describe VendingMachine do
       expect(vm.show_changes).to eq("1000円 10個\n100円 9個\n50円 18個\n10円 1個")
     end
   end
+
+  context "Step7:" do
+    it "ランダム購入 お金が足りないと買えない" do
+      vm = VendingMachine.new
+      vm.put_drink(Drink.new(name: "ダイエットコーラ", price: 120))
+      vm.put_drink(Drink.new(name: "ダイエットコーラ", price: 120))
+      vm.put_drink(Drink.new(name: "ダイエットコーラ", price: 120))
+      vm.put_drink(Drink.new(name: "ダイエットコーラ", price: 120))
+      vm.put_drink(Drink.new(name: "ダイエットコーラ", price: 120))
+      vm.put_drink(Drink.new(name: "お茶", price: 120))
+      vm.put_drink(Drink.new(name: "お茶", price: 120))
+      vm.put_drink(Drink.new(name: "お茶", price: 120))
+      vm.put_drink(Drink.new(name: "お茶", price: 120))
+      vm.put_drink(Drink.new(name: "お茶", price: 120))
+      vm.input_money(Money.new(100))
+
+      expect { vm.random_buy }.to change { vm.drinks_count }.by(0)
+      expect(vm.inputted_money).to eq(100)
+      expect(vm.sales).to eq(0)
+    end
+
+    it "ランダム購入" do
+      vm = VendingMachine.new
+      vm.put_drink(Drink.new(name: "ダイエットコーラ", price: 120))
+      vm.put_drink(Drink.new(name: "ダイエットコーラ", price: 120))
+      vm.put_drink(Drink.new(name: "ダイエットコーラ", price: 120))
+      vm.put_drink(Drink.new(name: "ダイエットコーラ", price: 120))
+      vm.put_drink(Drink.new(name: "ダイエットコーラ", price: 120))
+      vm.put_drink(Drink.new(name: "お茶", price: 120))
+      vm.put_drink(Drink.new(name: "お茶", price: 120))
+      vm.put_drink(Drink.new(name: "お茶", price: 120))
+      vm.put_drink(Drink.new(name: "お茶", price: 120))
+      vm.put_drink(Drink.new(name: "お茶", price: 120))
+      vm.input_money(Money.new(100))
+      vm.input_money(Money.new(50))
+
+      expect { vm.random_buy }.to change { vm.drinks_count }.by(-1)
+      expect(vm.inputted_money).to eq(30)
+      expect(vm.sales).to eq(120)
+    end
+  end
 end

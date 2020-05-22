@@ -40,4 +40,12 @@ class VendingMachine
     change_stock.refund(account.inputted_money)
     account.refund
   end
+
+  def random_buyable?
+    buyable?(%w(コーラ ダイエットコーラ お茶))
+  end
+
+  def random_buy
+    buy(%w(コーラ ダイエットコーラ お茶))
+  end
 end
