@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
-class Drink
-  attr_reader :name, :price
+require "date"
 
-  def initialize(name:, price:)
+class Drink
+  attr_reader :name, :price, :expiration
+
+  def initialize(name:, price:, expiration: ->{ Date.today.next_year }.call)
     @name = name.to_s
     @price = price.to_i
+    @expiration = expiration.to_date
   end
 
   def eql?(other)

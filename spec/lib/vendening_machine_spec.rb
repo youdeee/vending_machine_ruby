@@ -139,10 +139,12 @@ describe VendingMachine do
       change_stock = ChangeStock.new({
         Money.new(100) => 9,
         Money.new(50) => 18,
-        Money.new(1000) => 10,
+        Money.new(1000) => 9,
         Money.new(10) => 1
       })
       vm = VendingMachine.new(change_stock: change_stock)
+      vm.input_money(Money.new(1000))
+
       expect(vm.show_changes).to eq("1000円 10個\n100円 9個\n50円 18個\n10円 1個")
     end
   end
@@ -185,6 +187,43 @@ describe VendingMachine do
       expect { vm.random_buy }.to change { vm.drinks_count }.by(-1)
       expect(vm.inputted_money).to eq(30)
       expect(vm.sales).to eq(120)
+    end
+  end
+
+  context "Extra2(賞味期限管理):" do
+    it "賞味期限が切れてたらジュースを買えない" do
+      drink_case = DrinkCase.new([
+                                   Drink.new(name: "コーラ", price: 120, expiration: Date.today.prev_day)
+                                 ])
+      vm = VendingMachine.new(drink_case: drink_case)
+      vm.input_money(Money.new(500))
+
+      expect { vm.buy("コーラ") }.to change { vm.drinks_count }.by(0)
+      expect(vm.sales).to eq(0)
+    end
+
+    it "賞味期限が切れてたらジュースを買えない" do
+      drink_case = DrinkCase.new([
+                                   Drink.new(name: "コーラ", price: 120, expiration: Date.today.prev_day),
+                                   Drink.new(name: "コーラ", price: 120, expiration: Date.today)
+                                 ])
+      vm = VendingMachine.new(drink_case: drink_case)
+      vm.input_money(Money.new(500))
+
+      expect { vm.buy("コーラ") }.to change { vm.drinks_count }.by(-1)
+      expect(vm.sales).to eq(120)
+    end
+
+    it "賞味期限を表示" do
+      today = Date.new(2020, 5, 22)
+      drink_case = DrinkCase.new([
+                                   Drink.new(name: "コーラ", price: 120, expiration: today),
+                                   Drink.new(name: "コーラ", price: 120, expiration: today.prev_day),
+                                   Drink.new(name: "お茶", price: 100, expiration: today.next_year)
+                                 ])
+      vm = VendingMachine.new(drink_case: drink_case)
+
+      expect(vm.show_drinks_expirations).to eq("100円 お茶 賞味期限 2021年05月22日\n120円 コーラ 賞味期限 2020年05月21日\n120円 コーラ 賞味期限 2020年05月22日")
     end
   end
 end

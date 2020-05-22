@@ -19,9 +19,9 @@ class DrinkCase
 
   def buyable_drink(drink_name, money)
     if drink_name.is_a?(Array) # ランダム購入
-      drinks.shuffle.find { |drink| drink_name.include?(drink.name) && drink.price <= money }
+      drinks.shuffle.find { |drink| drink_name.include?(drink.name) && drink.price <= money && drink.expiration >= Date.today }
     else
-      drinks.find { |drink| drink.name == drink_name && drink.price <= money }
+      drinks.find { |drink| drink.name == drink_name && drink.price <= money && drink.expiration >= Date.today }
     end
   end
 
@@ -44,10 +44,14 @@ class DrinkCase
     @drinks = sort_drinks(drinks)
   end
 
+  def show_drinks_expirations
+    drinks.map { |drink| "#{drink.price}円 #{drink.name} 賞味期限 #{drink.expiration.strftime('%Y年%m月%d日')}" }.join("\n")
+  end
+
   private
 
   def sort_drinks(drinks)
-    drinks.sort_by { |drink| [drink.name, drink.price] }
+    drinks.sort_by { |drink| [drink.name, drink.price, drink.expiration] }
   end
 
   def drinks_stock

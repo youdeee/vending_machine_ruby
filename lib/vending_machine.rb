@@ -7,7 +7,7 @@ class VendingMachine
 
   attr_reader :account, :drink_case, :change_stock
 
-  def_delegators :@drink_case, :drinks_count, :show_drinks, :put_drink
+  def_delegators :@drink_case, :drinks_count, :show_drinks, :put_drink, :show_drinks_expirations
   def_delegators :@change_stock, :show_changes
   def_delegators :@account, :inputted_money, :sales
 
