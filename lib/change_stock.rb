@@ -44,11 +44,10 @@ class ChangeStock
 
   def available_changes(change_value)
     changes.each_with_object({}) do |(change, count), acc|
-      i = count
-      while change_value >= change.value && i > 0
+      while change_value >= change.value && count > 0
         acc[change] = acc[change].to_i + 1
         change_value -= change.value
-        i -= 1
+        count -= 1
       end
     end
   end
