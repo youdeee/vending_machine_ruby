@@ -4,7 +4,7 @@ class DrinkCase
   attr_reader :drinks
 
   class << self
-    def coke_5
+    def default
       new(Array.new(5) { Drink.new(name: "コーラ", price: 120) })
     end
   end
@@ -17,8 +17,8 @@ class DrinkCase
     drinks_stock.map { |drink, stock| "#{drink.price}円 #{drink.name} #{stock}本" }.join("\n")
   end
 
-  def buyable?(drink_name, money)
-    !!buyable_drink(drink_name, money)
+  def buyable_drink(drink_name, money)
+    drinks.find { |drink| drink.name == drink_name && drink.price <= money }
   end
 
   def drinks_count
@@ -30,7 +30,7 @@ class DrinkCase
     return unless drink
 
     i = @drinks.index { |_1| _1 == drink }
-    @drinks.delete_at(i).price
+    @drinks.delete_at(i)
   end
 
   def put_drink(drink)
@@ -44,10 +44,6 @@ class DrinkCase
 
   def sort_drinks(drinks)
     drinks.sort_by { |drink| [drink.name, drink.price] }
-  end
-
-  def buyable_drink(drink_name, money)
-    drinks.find { |drink| drink.name == drink_name && drink.price <= money }
   end
 
   def drinks_stock

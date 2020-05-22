@@ -8,4 +8,13 @@ class Money
   def initialize(value)
     @value = value if AVAILABLE_VALUE.include?(value)
   end
+
+  def eql?(other)
+   value == other.value
+  end
+  alias :== eql?
+
+  def hash
+    [value].hash
+  end
 end
