@@ -5,7 +5,7 @@ require "date"
 class Drink
   attr_reader :name, :price, :expiration
 
-  def initialize(name:, price:, expiration: ->{ Date.today.next_year }.call)
+  def initialize(name:, price:, expiration: Date.today.next_year)
     @name = name.to_s
     @price = price.to_i
     @expiration = expiration.to_date
