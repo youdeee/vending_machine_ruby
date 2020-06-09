@@ -1,35 +1,32 @@
 # frozen_string_literal: true
 
 class Account
-  attr_reader :inputted_money, :sales, :inputted_money_type
+  attr_reader :inputted_money, :sales
 
   AVAILABLE_CHANGE = [10, 50, 100, 500, 1000]
 
-  def initialize(inputted_money: 0, sales: 0, inputted_money_type: nil)
+  def initialize(inputted_money: Money.new, sales: 0)
     @inputted_money = inputted_money
     @sales = sales
-    @inputted_money_type = inputted_money_type
   end
 
   def input_money(money)
-    return money.value if @inputted_money_type == :cash && !money.cash? # cash→emoneyだったらemoneyは無視
+    return money.value unless money.coin_or_emoney?
+    return money.value if @inputted_money.type?(:cash) && money.type?(:emoney)
 
-    refund if @inputted_money_type == :emoney # emoney→だったら前のemoneyはキャンセル
-    @inputted_money_type = money.type
+    refund if @inputted_money.type?(:emoney)
+    return money.value if money.type?(:cash) && !AVAILABLE_CHANGE.include?(money.value)
 
-    return money.value if money.cash? && !AVAILABLE_CHANGE.include?(money.value)
-
-    @inputted_money += money.value
+    @inputted_money = @inputted_money.calc(money, :+)
     nil
   end
 
   def refund
-    inputted_money_type = nil
-    inputted_money.tap { @inputted_money = 0 }
+    inputted_money.value.tap { @inputted_money = Money.new }
   end
 
   def buy(price)
-    @inputted_money -= price.to_i
+    @inputted_money = @inputted_money.calc_value(price.to_i, :-)
     @sales += price.to_i
   end
 end

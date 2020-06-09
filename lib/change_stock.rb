@@ -6,11 +6,11 @@ class ChangeStock
   class << self
     def default
       new({
-            Money.cash(1000) => 10,
-            Money.cash(500) => 10,
-            Money.cash(100) => 10,
-            Money.cash(50) => 10,
-            Money.cash(10) => 10
+            Coin.new(1000) => 10,
+            Coin.new(500) => 10,
+            Coin.new(100) => 10,
+            Coin.new(50) => 10,
+            Coin.new(10) => 10
           })
     end
   end
@@ -19,21 +19,23 @@ class ChangeStock
     @changes = sort_changes(changes)
   end
 
-  def buyable?(money_value)
-    return true if money_value.to_i == 0
+  def buyable?(money)
+    return true if money.type?(:emoney) || money.value == 0
 
-    !available_changes(money_value).empty?
+    !available_changes(money.value).empty?
   end
 
   def put_change(money)
-    return unless money.cash?
+    return if money.type?(:emoney)
 
     @changes[money] = @changes[money].to_i + 1
     @changes = sort_changes(@changes)
   end
 
-  def refund(money_value)
-    available_changes(money_value).each do |change, count|
+  def refund(money)
+    return if money.type?(:emoney)
+
+    available_changes(money.value).each do |change, count|
       @changes[change] = @changes[change].to_i - count
     end
   end

@@ -21,22 +21,21 @@ class VendingMachine
   end
 
   def buyable?(drink_name)
-    drink = drink_case.buyable_drink(drink_name, account.inputted_money)
+    drink = drink_case.buyable_drink(drink_name, account.inputted_money.value)
     return false unless drink
-    return true if account.inputted_money_type == :emoney
 
-    change_stock.buyable?(account.inputted_money - drink.price)
+    change_stock.buyable?(account.inputted_money.calc_value(drink.price, :-))
   end
 
   def buy(drink_name)
     return unless buyable?(drink_name)
 
-    drink = drink_case.buy(drink_name, account.inputted_money)
+    drink = drink_case.buy(drink_name, account.inputted_money.value)
     account.buy(drink.price)
   end
 
   def refund
-    change_stock.refund(account.inputted_money) if account.inputted_money_type == :cash
+    change_stock.refund(account.inputted_money)
     account.refund
   end
 

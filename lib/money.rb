@@ -2,21 +2,10 @@
 
 class Money
   attr_reader :value, :type
-  private_class_method :new
 
   AVAILABLE_VALUE = [1, 5, 10, 50, 100, 500, 1000, 2000, 5000, 10000]
 
-  class << self
-    def cash(value)
-      new(AVAILABLE_VALUE.include?(value) ? value : 0, :cash)
-    end
-
-    def emoney(value)
-      new(value, :emoney)
-    end
-  end
-
-  def initialize(value, type = :cash)
+  def initialize(value = 0, type = nil)
     @value = value
     @type = type
   end
@@ -31,7 +20,21 @@ class Money
     [value, type].hash
   end
 
-  def cash?
-    type == :cash
+  def coin_or_emoney?
+    is_a?(Coin) || is_a?(Emoney)
+  end
+
+  def calc(money, operator)
+    return self if type != nil && type != money.type
+
+    self.class.new(value.public_send(operator, money.value), money.type)
+  end
+
+  def calc_value(value, operator)
+    self.class.new(self.value.public_send(operator, value), type)
+  end
+
+  def type?(type)
+    self.type == type
   end
 end
