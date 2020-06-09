@@ -6,11 +6,11 @@ class ChangeStock
   class << self
     def default
       new({
-            Money.new(1000) => 10,
-            Money.new(500) => 10,
-            Money.new(100) => 10,
-            Money.new(50) => 10,
-            Money.new(10) => 10
+            Money.cash(1000) => 10,
+            Money.cash(500) => 10,
+            Money.cash(100) => 10,
+            Money.cash(50) => 10,
+            Money.cash(10) => 10
           })
     end
   end
@@ -26,6 +26,8 @@ class ChangeStock
   end
 
   def put_change(money)
+    return unless money.cash?
+
     @changes[money] = @changes[money].to_i + 1
     @changes = sort_changes(@changes)
   end

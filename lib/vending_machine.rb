@@ -5,8 +5,6 @@ require "forwardable"
 class VendingMachine
   extend Forwardable
 
-  attr_reader :account, :drink_case, :change_stock
-
   def_delegators :@drink_case, :drinks_count, :show_drinks, :put_drink, :show_drinks_expirations
   def_delegators :@change_stock, :show_changes
   def_delegators :@account, :inputted_money, :sales
@@ -25,6 +23,7 @@ class VendingMachine
   def buyable?(drink_name)
     drink = drink_case.buyable_drink(drink_name, account.inputted_money)
     return false unless drink
+    return true if account.inputted_money_type == :emoney
 
     change_stock.buyable?(account.inputted_money - drink.price)
   end
@@ -37,7 +36,7 @@ class VendingMachine
   end
 
   def refund
-    change_stock.refund(account.inputted_money)
+    change_stock.refund(account.inputted_money) if account.inputted_money_type == :cash
     account.refund
   end
 
@@ -48,4 +47,8 @@ class VendingMachine
   def random_buy
     buy(%w(コーラ ダイエットコーラ お茶))
   end
+
+  private
+
+  attr_reader :account, :drink_case, :change_stock, :emoney_supported
 end
