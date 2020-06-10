@@ -273,5 +273,14 @@ describe VendingMachine do
 
       expect(vm.inputted_money.value).to eq(234)
     end
+
+    it "電子マネーを入れた後に無効な現金を入れると、電子マネーはキャンセルされない" do
+      vm = VendingMachine.new
+      vm.input_money(Emoney.new(1234))
+      vm.input_money(Coin.new(5000))
+
+      expect(vm.inputted_money.value).to eq(1234)
+      expect(vm.refund).to eq(1234)
+    end
   end
 end

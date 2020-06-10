@@ -16,8 +16,11 @@ class VendingMachine
   end
 
   def input_money(money)
-    change_stock.put_change(money)
-    account.input_money(money)
+    if money.is_a?(Coin)
+      change_stock.put_change(money) ? account.input_money(money) : money.value
+    else
+      account.input_money(money)
+    end
   end
 
   def buyable?(drink_name)

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "money"
+require_relative "./money"
 
 class Coin < Money
   AVAILABLE_VALUE = [1, 5, 10, 50, 100, 500, 1000, 2000, 5000, 10000]

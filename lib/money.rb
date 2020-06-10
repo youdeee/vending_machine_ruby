@@ -20,10 +20,6 @@ class Money
     [value, type].hash
   end
 
-  def coin_or_emoney?
-    is_a?(Coin) || is_a?(Emoney)
-  end
-
   def calc(money, operator)
     return self if type != nil && type != money.type
 

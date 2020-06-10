@@ -3,6 +3,8 @@
 class ChangeStock
   attr_reader :changes
 
+  AVAILABLES = [10, 50, 100, 500, 1000]
+
   class << self
     def default
       new({
@@ -16,6 +18,7 @@ class ChangeStock
   end
 
   def initialize(changes = {})
+    changes.delete_if { |_1| !available?(_1) }
     @changes = sort_changes(changes)
   end
 
@@ -26,14 +29,14 @@ class ChangeStock
   end
 
   def put_change(money)
-    return if money.type?(:emoney)
+    return unless available?(money)
 
     @changes[money] = @changes[money].to_i + 1
     @changes = sort_changes(@changes)
   end
 
   def refund(money)
-    return if money.type?(:emoney)
+    return unless money.type?(:cash)
 
     available_changes(money.value).each do |change, count|
       @changes[change] = @changes[change].to_i - count
@@ -45,6 +48,10 @@ class ChangeStock
   end
 
   private
+
+  def available?(coin)
+    coin.is_a?(Coin) && AVAILABLES.include?(coin.value)
+  end
 
   def available_changes(change_value)
     changes.each_with_object({}) do |(change, count), acc|

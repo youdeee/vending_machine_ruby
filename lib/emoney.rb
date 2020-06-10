@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "money"
+require_relative "./money"
 
 class Emoney < Money
   def initialize(value)
