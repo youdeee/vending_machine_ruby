@@ -21,13 +21,9 @@ class Money
   end
 
   def calc(money, operator)
-    return self if type != nil && type != money.type
+    return self if type != money.type && type != nil && money.type != nil
 
-    self.class.new(value.public_send(operator, money.value), money.type)
-  end
-
-  def calc_value(value, operator)
-    self.class.new(self.value.public_send(operator, value), type)
+    self.class.new(value.public_send(operator, money.value), [type, money.type].compact[0])
   end
 
   def type?(type)

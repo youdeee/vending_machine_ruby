@@ -8,7 +8,7 @@ describe VendingMachine do
       vm.input_money(Coin.new(50))
       vm.input_money(Coin.new(10000))
 
-      expect(vm.inputted_money.value).to eq(60)
+      expect(vm.inputted_value).to eq(60)
     end
 
     it "返金したらお釣りが返り合計金額が0になる" do
@@ -16,7 +16,7 @@ describe VendingMachine do
       vm.input_money(Coin.new(10))
 
       expect(vm.refund).to eq(10)
-      expect(vm.inputted_money.value).to eq(0)
+      expect(vm.inputted_value).to eq(0)
     end
   end
 
@@ -25,7 +25,7 @@ describe VendingMachine do
       vm = VendingMachine.new
 
       expect(vm.input_money(Coin.new(5))).to eq(5)
-      expect(vm.inputted_money.value).to eq(0)
+      expect(vm.inputted_value).to eq(0)
     end
   end
 
@@ -69,7 +69,7 @@ describe VendingMachine do
       vm.input_money(Coin.new(50))
 
       expect { vm.buy("コーラ") }.to change { vm.drinks_count }.by(-1)
-      expect(vm.inputted_money.value).to eq(30)
+      expect(vm.inputted_value).to eq(30)
       expect(vm.sales).to eq(120)
     end
 
@@ -79,7 +79,7 @@ describe VendingMachine do
       vm.input_money(Coin.new(10))
 
       expect { vm.buy("コーラ") }.to change { vm.drinks_count }.by(0)
-      expect(vm.inputted_money.value).to eq(110)
+      expect(vm.inputted_value).to eq(110)
       expect(vm.sales).to eq(0)
     end
 
@@ -118,7 +118,7 @@ describe VendingMachine do
       vm.input_money(Coin.new(50))
 
       expect { vm.buy("コーラ") }.to change { vm.drinks_count }.by(0)
-      expect(vm.inputted_money.value).to eq(150)
+      expect(vm.inputted_value).to eq(150)
       expect(vm.sales).to eq(0)
     end
 
@@ -130,7 +130,7 @@ describe VendingMachine do
       vm.input_money(Coin.new(10))
 
       expect { vm.buy("コーラ") }.to change { vm.drinks_count }.by(-1)
-      expect(vm.inputted_money.value).to eq(10)
+      expect(vm.inputted_value).to eq(10)
       expect(vm.sales).to eq(120)
       expect(vm.refund).to eq(10)
     end
@@ -165,7 +165,7 @@ describe VendingMachine do
       vm.input_money(Coin.new(100))
 
       expect { vm.random_buy }.to change { vm.drinks_count }.by(0)
-      expect(vm.inputted_money.value).to eq(100)
+      expect(vm.inputted_value).to eq(100)
       expect(vm.sales).to eq(0)
     end
 
@@ -185,7 +185,7 @@ describe VendingMachine do
       vm.input_money(Coin.new(50))
 
       expect { vm.random_buy }.to change { vm.drinks_count }.by(-1)
-      expect(vm.inputted_money.value).to eq(30)
+      expect(vm.inputted_value).to eq(30)
       expect(vm.sales).to eq(120)
     end
   end
@@ -230,11 +230,11 @@ describe VendingMachine do
   describe "Original1(電子マネー対応)" do
     it "電子マネーでコーラを購入できる" do
       vm = VendingMachine.new
-      vm.input_money(Emoney.new(1234))
+      vm.input_money(Money.new(1234, :emoney))
       changes = vm.show_changes
 
       expect { vm.buy("コーラ") }.to change { vm.drinks_count }.by(-1)
-      expect(vm.inputted_money.value).to eq(1114)
+      expect(vm.inputted_value).to eq(1114)
       expect(vm.sales).to eq(120)
       expect(vm.refund).to eq(1114)
       expect(vm.show_changes).to eq(changes)
@@ -242,44 +242,44 @@ describe VendingMachine do
 
     it "おつりがなくても電子マネーでコーラを購入できる" do
       vm = VendingMachine.new(change_stock: ChangeStock.new)
-      vm.input_money(Emoney.new(1234))
+      vm.input_money(Money.new(1234, :emoney))
 
       expect { vm.buy("コーラ") }.to change { vm.drinks_count }.by(-1)
-      expect(vm.inputted_money.value).to eq(1114)
+      expect(vm.inputted_value).to eq(1114)
       expect(vm.sales).to eq(120)
       expect(vm.refund).to eq(1114)
     end
 
     it "電子マネーを入れた後に現金を入れると、電子マネーはキャンセルされる" do
       vm = VendingMachine.new
-      vm.input_money(Emoney.new(1234))
+      vm.input_money(Money.new(1234, :emoney))
       vm.input_money(Coin.new(500))
 
-      expect(vm.inputted_money.value).to eq(500)
+      expect(vm.inputted_value).to eq(500)
     end
 
     it "現金を入れた後に電子マネーを入れると、電子マネーは無視される" do
       vm = VendingMachine.new
       vm.input_money(Coin.new(500))
-      vm.input_money(Emoney.new(1234))
+      vm.input_money(Money.new(1234, :emoney))
 
-      expect(vm.inputted_money.value).to eq(500)
+      expect(vm.inputted_value).to eq(500)
     end
 
     it "電子マネーを入れた後に電子マネーを入れると、最初の電子マネーはキャンセルされる" do
       vm = VendingMachine.new
-      vm.input_money(Emoney.new(1234))
-      vm.input_money(Emoney.new(234))
+      vm.input_money(Money.new(1234, :emoney))
+      vm.input_money(Money.new(234, :emoney))
 
-      expect(vm.inputted_money.value).to eq(234)
+      expect(vm.inputted_value).to eq(234)
     end
 
     it "電子マネーを入れた後に無効な現金を入れると、電子マネーはキャンセルされない" do
       vm = VendingMachine.new
-      vm.input_money(Emoney.new(1234))
+      vm.input_money(Money.new(1234, :emoney))
       vm.input_money(Coin.new(5000))
 
-      expect(vm.inputted_money.value).to eq(1234)
+      expect(vm.inputted_value).to eq(1234)
       expect(vm.refund).to eq(1234)
     end
   end

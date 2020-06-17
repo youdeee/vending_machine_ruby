@@ -22,10 +22,10 @@ class ChangeStock
     @changes = sort_changes(changes)
   end
 
-  def buyable?(money)
-    return true if money.type?(:emoney) || money.value == 0
+  def stock_enough?(value)
+    return true if value == 0
 
-    !available_changes(money.value).empty?
+    !available_changes(value).empty?
   end
 
   def put_change(money)
@@ -35,10 +35,8 @@ class ChangeStock
     @changes = sort_changes(@changes)
   end
 
-  def refund(money)
-    return unless money.type?(:cash)
-
-    available_changes(money.value).each do |change, count|
+  def refund(value)
+    available_changes(value).each do |change, count|
       @changes[change] = @changes[change].to_i - count
     end
   end
